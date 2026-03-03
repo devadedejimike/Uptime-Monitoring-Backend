@@ -1,5 +1,5 @@
 import express from 'express';
-import authRoute from './Modules/authRoutes'
+import authRoute from './Modules/auth/authRoutes'
 
 const app = express()
 app.use(express.json());
