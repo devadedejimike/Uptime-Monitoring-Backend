@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
 dotenv.config()
 import app from "./app";
+import { startMonitoring } from './Modules/workers/monitorWorkers';
+
+startMonitoring();
 
 const PORT = process.env.PORT||500;
 
