@@ -18,4 +18,16 @@ export class WebsiteController{
             })
         }
     }
+    static async getAll(req: AuthRequest, res: Response){
+        try {
+            const websites = await WebsiteServices.getUserWebsites(req.userId!)
+
+            res.status(201).json(websites);
+        } catch (error) {
+            res.status(401).json({
+                status: 'fail',
+                message: 'Server Error', error
+            })
+        }
+    }
 }
