@@ -30,4 +30,22 @@ export class WebsiteController{
             })
         }
     }
+    static async deleteWebsite(req: AuthRequest, res: Response){
+        try {
+            const websiteId = String(req.params.id);
+
+            const deleted = await WebsiteServices.deleteWebsite(req.userId!, websiteId);
+
+            if(!deleted){
+                return res.status(401).json({message: 'Website not found'})
+            }
+
+            res.status(201).json({message: 'Website deleted successfully'})
+        } catch (error) {
+            res.status(401).json({
+                status: 'fail',
+                message: 'Server Error', error
+            })
+        }
+    }
 }
