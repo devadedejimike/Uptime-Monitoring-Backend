@@ -48,4 +48,25 @@ export class WebsiteController{
             })
         }
     }
+
+    static async getWebsiteStats(req: AuthRequest, res: Response){
+        try {
+            const websiteId = Number(req.params.id);
+            const stat = await WebsiteServices.getWebsiteStats(req.userId!, websiteId)
+
+            if(!stat) {
+                return res.json({message: "Website not found"})
+            }
+            res.status(200).json({
+                status: "success",
+                stat
+            })
+        } catch (error) {
+            res.status(404).json({
+                status: "fail",
+                message: "Server Error", error
+            })
+        }
+
+    }
 }
