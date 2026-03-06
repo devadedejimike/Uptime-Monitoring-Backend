@@ -67,6 +67,24 @@ export class WebsiteController{
                 message: "Server Error", error
             })
         }
+    }
+    static async getChecks(req: AuthRequest, res: Response){
+        try {
+            const websiteId = Number(req.params.id)
+            const checks = await WebsiteServices.getChecks(req.userId!, websiteId);
 
+            if(!checks){
+                return res.status(404).json({message: "Website not found"})
+            }
+            return res.status(200).json({
+                status: 'success',
+                checks
+            })
+        } catch (error) {
+            return res.status(500).json({
+                status: 'fail',
+                message: 'Server Error', error
+            })
+        }
     }
 }
