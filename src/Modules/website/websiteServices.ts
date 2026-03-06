@@ -71,6 +71,21 @@ export class WebsiteServices {
     }
     static async getChecks(userId: number, websiteId: number){
         // Ensure website belongs to user
-        
+        const website = await pool.query(
+            'SELECT id FROM websites WHERE id = $1 AND user_id = $2', [websiteId, userId]
+        )
+        if(website.rows.length === 0) return null;
+
+        // Fetch last 20 checks
+        const checks = await pool.query(
+            `
+            SELECT status, response_time_ms, checked_at 
+            FROM checks
+            WHERE website_id = $1
+            ORDER BY checked_at DESC
+            LIMIT 20
+            `,[websiteId]
+        )
+        return checks.rows;
     }
 }
