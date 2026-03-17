@@ -11,8 +11,8 @@ export const protect = (req: AuthRequest, res: Response, next: NextFunction) => 
     try {
         // Check for header
         const authHeader = req.headers.authorization;
-        if(!authHeader){
-            return res.status(404).json({message: 'No token provided'})
+        if(!authHeader || !authHeader.startsWith('Bearer')){
+            return res.status(401).json({message: 'No token provided'})
         }
 
         // Check Bearer token
@@ -30,7 +30,7 @@ export const protect = (req: AuthRequest, res: Response, next: NextFunction) => 
     } catch (error) {
         res.status(401).json({
             status: 'fail',
-            message: 'Invalid or Expired Token', error
+            message: 'Invalid or Expired Token'
         })
     }
 }
