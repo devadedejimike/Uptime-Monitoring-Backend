@@ -1,9 +1,9 @@
 import { pool } from "../../Config/db";
 
 export class WebsiteServices {
-    static async createWebsite(userId: number, url: string) {
+    static async createWebsite(userId: number, name: string, url: string) {
         const result = await pool.query(
-            'INSERT INTO websites (user_id, url) VALUES ($1, $2) RETURNING *',[userId, url]
+            'INSERT INTO websites (user_id, name, url) VALUES ($1, $2, $3) RETURNING *',[userId, name, url]
         )
         return result.rows[0];
     }
@@ -82,7 +82,7 @@ export class WebsiteServices {
             SELECT status, response_time_ms, checked_at 
             FROM checks
             WHERE website_id = $1
-            ORDER BY checked_at DESC
+            ORDER BY checked_at ASC
             LIMIT 20
             `,[websiteId]
         )
