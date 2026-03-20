@@ -5,11 +5,11 @@ import { WebsiteServices } from "./websiteServices";
 export class WebsiteController{
     static async create(req: AuthRequest, res: Response){
         try {
-            const { url } = req.body;
+            const { name, url } = req.body;
             if(!url) {
                 return res.status(401).json({message: "URL is required"})
             }
-            const website = await WebsiteServices.createWebsite(req.userId!, url)
+            const website = await WebsiteServices.createWebsite(req.userId!, name, url)
             res.status(201).json(website)
         } catch (error) {
             res.status(401).json({
