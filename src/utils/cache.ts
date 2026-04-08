@@ -10,3 +10,14 @@ export const setCache = <T>(key: string, data: T, ttl: number) => {
 
     cache.set(key, {data, expiry});
 }
+
+export const getCache = <T>(key: string) : T | null => {
+    const item = cache.get(key);
+    if(!item) return null;
+    if(Date.now() > item.expiry){
+        cache.delete(key);
+        return null
+    }
+
+    return item?.data as T;
+}
