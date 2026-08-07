@@ -26,3 +26,22 @@ export interface MonitorTarget{
     id: number,
     url: string
 }
+
+// 
+export interface WebsiteMonitoringState {
+    last_status: MonitorStatus | null;
+    consecutive_failures: number;
+    consecutive_success: number;
+    incident_active: boolean;
+    user_id: number;
+    url: string
+}
+
+export type IncidentEvent = "DOWN" | "RECOVERY";
+
+export interface HandleIncidentEventProps {
+    userId: number;
+    websiteId: number;
+    websiteUrl: string;
+    event: IncidentEvent
+}
