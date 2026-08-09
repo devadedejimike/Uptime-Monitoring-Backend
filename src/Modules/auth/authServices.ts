@@ -191,7 +191,7 @@ export class AuthService{
     static async getMe(userId: number){
         try {
             const result = await pool.query(
-            'SELECT id, email FROM users WHERE id = $1', [userId]
+            'SELECT id, email, is_verified FROM users WHERE id = $1', [userId]
             );
             if(result.rows.length === 0){
                 throw new Error("User not found")
