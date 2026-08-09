@@ -28,9 +28,34 @@ export class AuthController {
     static async getMe(req: AuthRequest, res: Response){
         try {
             const user = await AuthService.getMe(req.userId!);
-            res.json({ id: user.id, email: user.email });
+            res.json({ id: user.id, email: user.email, isVerified: user.is_verified });
         } catch (error) {
             res.status(500).json({message: "failed to fetch user", error})
+        }
+    }
+    // Verify email
+    static async verifyEmail(req: Request, res: Response) {
+        try {
+            const { token } = req.query;
+
+            if (typeof token !== "string" || !token) {
+                return res.status(400).json({
+                    message: "Verification token is required"
+                });
+            }
+
+            const user = await AuthService.verifyEmail(token);
+
+            return res.status(200).json({
+                status: "success",
+                message: "Email verified successfully",
+                user
+            });
+        } catch (error: any) {
+            return res.status(400).json({
+                status: "fail",
+                message: error.message
+            });
         }
     }
 }
