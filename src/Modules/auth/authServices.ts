@@ -83,7 +83,84 @@ export class AuthService{
             token
         };
     }
-    
+        
+    static async verifyEmail(verificationToken: string) {
+        // Hash the token received from the verification link
+        const tokenHash = crypto
+            .createHash('sha256')
+            .update(verificationToken)
+            .digest('hex');
+
+        // Find the verification token
+        const tokenResult = await pool.query(
+            `
+            SELECT user_id, expires_at
+            FROM verification_tokens
+            WHERE token_hash = $1
+            `,
+            [tokenHash]
+        );
+
+        if (tokenResult.rows.length === 0) {
+            throw new Error("Invalid verification token");
+        }
+
+        const verificationTokenData = tokenResult.rows[0];
+
+        // Check if the token has expired
+        if (new Date() > new Date(verificationTokenData.expires_at)) {
+            throw new Error("Verification token has expired");
+        }
+
+        // Get a database connection for the transaction
+        const client = await pool.connect();
+
+        try {
+            // Start transaction
+            await client.query("BEGIN");
+
+            // Mark the user's email as verified
+            const userResult = await client.query(
+                `
+                UPDATE users
+                SET
+                    is_verified = TRUE,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = $1
+                RETURNING id, email, is_verified
+                `,
+                [verificationTokenData.user_id]
+            );
+
+            if (userResult.rows.length === 0) {
+                throw new Error("User not found");
+            }
+
+            // Delete the token so it cannot be used again
+            await client.query(
+                `
+                DELETE FROM verification_tokens
+                WHERE token_hash = $1
+                `,
+                [tokenHash]
+            );
+
+            // Save both changes
+            await client.query("COMMIT");
+
+            return userResult.rows[0];
+
+        } catch (error) {
+            // Undo changes if anything fails
+            await client.query("ROLLBACK");
+            throw error;
+
+        } finally {
+            // Return connection to pool
+            client.release();
+        }
+    }
+
     static async login(email: string, password: string){
         // Find user by email
         const result = await pool.query(
