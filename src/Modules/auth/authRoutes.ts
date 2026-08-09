@@ -7,5 +7,6 @@ router
     .post('/register', AuthController.register)
     .post('/login', AuthController.login)
     .get('/me',protect, AuthController.getMe)
+    .get('/verify-email', AuthController.verifyEmail)
 
 export default router;
